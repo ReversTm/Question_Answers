@@ -26,14 +26,19 @@ public class Client {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "genre")
-    private String genre;
+    @Column(name = "age")
+    private String age;
 
-    @Column(name = "author")
-    private String author;
+    @Column(name = "surname")
+    private String surname;
 
-    @Column(name = "date_column")
-    private LocalDate dateOfRelease;
+//    @OneToMany(mappedBy = "client")
+//    private List<Question> questions;
+//
+//    // Поле для хранения ответа
+//    @OneToMany(mappedBy = "client")
+//    private List<Answer> answers;
+
 
 //    @ManyToMany(cascade = {CascadeType.REFRESH,
 //            CascadeType.PERSIST,
