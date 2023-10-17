@@ -3,10 +3,6 @@ package com.example.springbootpages.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -15,15 +11,15 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 @Entity
-@Table(name = "client")
-public class Client {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @Column(name = "name")
+    @Column(name = "username")
     private String name;
 
     @Column(name = "age")
@@ -31,6 +27,12 @@ public class Client {
 
     @Column(name = "surname")
     private String surname;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "enabled")
+    private int enabled;
 
 //    @OneToMany(mappedBy = "client")
 //    private List<Question> questions;

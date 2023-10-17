@@ -1,6 +1,5 @@
 package com.example.springbootpages.Service;
 
-import com.example.springbootpages.Entity.Client;
 import com.example.springbootpages.Entity.Question;
 import com.example.springbootpages.Repository.QuestionRepository;
 import lombok.AllArgsConstructor;
@@ -22,7 +21,7 @@ public class QuestionService {
         return questions;
     }*/
     public List<Question> getAllQuestions(int id) {
-        List<Question> questions = questionRepository.findByClientId(id);
+        List<Question> questions = questionRepository.findById(id);
 //        System.out.println(questions);
         return questions;
     }

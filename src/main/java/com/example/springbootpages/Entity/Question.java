@@ -24,6 +24,6 @@ public class Question {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private Client client;
+    private User user;
 
 }

@@ -1,7 +1,7 @@
 package com.example.springbootpages.Controller;
 
 import com.example.springbootpages.Entity.Answer;
-import com.example.springbootpages.Entity.Client;
+import com.example.springbootpages.Entity.User;
 import com.example.springbootpages.Entity.Question;
 import com.example.springbootpages.Service.AnswerService;
 import com.example.springbootpages.Service.ClientService;
@@ -9,7 +9,6 @@ import com.example.springbootpages.Service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -46,13 +45,14 @@ public class HomeController {
 //
 //        return "showAllQuestions";
 
-        List<Client> allClients = clientService.getAllClients();
-        model.addAttribute("allClients", allClients);
-        Map<Client, List<Question>> userQuestionsMap = new HashMap<>();
+        List<User> allUsers = clientService.getAllClients();
+        System.out.println(allUsers);
+        model.addAttribute("allClients", allUsers);
+        Map<User, List<Question>> userQuestionsMap = new HashMap<>();
 
-        for (Client client : allClients) {
-            List<Question> userQuestions = questionService.getAllQuestions(client.getId());
-            userQuestionsMap.put(client, userQuestions);
+        for (User user : allUsers) {
+            List<Question> userQuestions = questionService.getAllQuestions(user.getId());
+            userQuestionsMap.put(user, userQuestions);
         }
 
         model.addAttribute("userQuestionsMap", userQuestionsMap);
@@ -65,11 +65,11 @@ public class HomeController {
             @RequestParam int questionId, Model
             model) {
         Question question = questionService.getQuestion(questionId);
-        Client client = clientService.getClientById(clientId);
+        User user = clientService.getClientById(clientId);
         List<Answer> answers = answerService.getByQuestion(question);
 
         model.addAttribute("question", question);
-        model.addAttribute("client", client);
+        model.addAttribute("client", user);
         model.addAttribute("answers", answers);
 
         return "answer-info";
@@ -83,7 +83,7 @@ public class HomeController {
 //        System.out.println(clientId);
 //        System.out.println("hello!");
         try {
-            Client client = clientService.getClientById(clientId);
+            User user = clientService.getClientById(clientId);
 
 //            System.out.println(clientId);
 //            System.out.println(questionId);
@@ -97,7 +97,7 @@ public class HomeController {
             Question question = questionService.getQuestion(questionId);
 
             answer.setQuestion(question);
-            answer.setClient(client);
+            answer.setUser(user);
 
             // Сохраните ответ в базе данных
             answerService.saveAnswer(answer);

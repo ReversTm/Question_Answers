@@ -1,7 +1,6 @@
 package com.example.springbootpages.Repository;
 
 import com.example.springbootpages.Entity.Answer;
-import com.example.springbootpages.Entity.Client;
 import com.example.springbootpages.Entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 

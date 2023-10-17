@@ -1,10 +1,8 @@
 package com.example.springbootpages.Service;
 
 import com.example.springbootpages.Entity.Answer;
-import com.example.springbootpages.Entity.Client;
 import com.example.springbootpages.Entity.Question;
 import com.example.springbootpages.Repository.AnswerRepository;
-import com.example.springbootpages.Repository.ClientRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
