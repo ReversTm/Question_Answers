@@ -4,7 +4,7 @@ import com.example.springbootpages.Entity.Answer;
 import com.example.springbootpages.Entity.User;
 import com.example.springbootpages.Entity.Question;
 import com.example.springbootpages.Service.AnswerService;
-import com.example.springbootpages.Service.ClientService;
+import com.example.springbootpages.Service.UserService;
 import com.example.springbootpages.Service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class HomeController {
 
     @Autowired
-    private ClientService clientService;
+    private UserService userService;
 
     @Autowired
     private QuestionService questionService;
@@ -45,7 +45,7 @@ public class HomeController {
 //
 //        return "showAllQuestions";
 
-        List<User> allUsers = clientService.getAllClients();
+        List<User> allUsers = userService.getAllUsers();
         System.out.println(allUsers);
         model.addAttribute("allClients", allUsers);
         Map<User, List<Question>> userQuestionsMap = new HashMap<>();
@@ -65,7 +65,7 @@ public class HomeController {
             @RequestParam int questionId, Model
             model) {
         Question question = questionService.getQuestion(questionId);
-        User user = clientService.getClientById(clientId);
+        User user = userService.getUserById(clientId);
         List<Answer> answers = answerService.getByQuestion(question);
 
         model.addAttribute("question", question);
@@ -83,7 +83,7 @@ public class HomeController {
 //        System.out.println(clientId);
 //        System.out.println("hello!");
         try {
-            User user = clientService.getClientById(clientId);
+            User user = userService.getUserById(clientId);
 
 //            System.out.println(clientId);
 //            System.out.println(questionId);

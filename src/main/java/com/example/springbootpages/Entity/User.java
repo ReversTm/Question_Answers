@@ -3,11 +3,12 @@ package com.example.springbootpages.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
 @EqualsAndHashCode
 @Builder
 @Entity
@@ -34,22 +35,11 @@ public class User {
     @Column(name = "enabled")
     private int enabled;
 
-//    @OneToMany(mappedBy = "client")
-//    private List<Question> questions;
-//
-//    // Поле для хранения ответа
-//    @OneToMany(mappedBy = "client")
-//    private List<Answer> answers;
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
+    private List<Role> roles;
 
-
-//    @ManyToMany(cascade = {CascadeType.REFRESH,
-//            CascadeType.PERSIST,
-//            CascadeType.MERGE,
-//            CascadeType.DETACH})
-//    @JoinTable(
-//            name = "book_client",
-//            joinColumns = @JoinColumn(name = "book_id"),
-//            inverseJoinColumns = @JoinColumn(name = "client_id")
-//    )
-//    private List<Client> clients = new ArrayList<>();
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + "]";
+    }
 }
