@@ -35,8 +35,14 @@ public class User {
     @Column(name = "enabled")
     private int enabled;
 
-    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
     private List<Role> roles;
+
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions;
+
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Answer> answers;
 
     @Override
     public String toString() {

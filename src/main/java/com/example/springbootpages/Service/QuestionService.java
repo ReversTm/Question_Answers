@@ -15,13 +15,9 @@ public class QuestionService {
     @Autowired
     private final QuestionRepository questionRepository;
 
-   /* public List<Question> getAllQuestions(Client client) {
-        List<Question> questions = questionRepository.findByClient(client);
-        System.out.println(questions);
-        return questions;
-    }*/
     public List<Question> getAllQuestions(int id) {
-        List<Question> questions = questionRepository.findById(id);
+//        System.out.println(id);
+        List<Question> questions = questionRepository.findByUserId(id);
 //        System.out.println(questions);
         return questions;
     }

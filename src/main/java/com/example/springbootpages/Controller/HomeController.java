@@ -12,9 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class HomeController {
@@ -38,20 +36,16 @@ public class HomeController {
     @RequestMapping("/showAllQuestions")
     public String showAllQuestions(Model model) {
 
-//        List<Client> allClients = clientService.getAllClients();
-//        model.addAttribute("allClients", allClients);
-//        List<Question> questionList = clientService.getAllQuestions();
-//        model.addAttribute("allQuestions", questionList);
-//
-//        return "showAllQuestions";
-
         List<User> allUsers = userService.getAllUsers();
-        System.out.println(allUsers);
+//        System.out.println(allUsers);
         model.addAttribute("allClients", allUsers);
         Map<User, List<Question>> userQuestionsMap = new HashMap<>();
 
         for (User user : allUsers) {
+//            System.out.println(user);
+//            System.out.println("ID:" + user.getId());
             List<Question> userQuestions = questionService.getAllQuestions(user.getId());
+//            System.out.println(userQuestions);
             userQuestionsMap.put(user, userQuestions);
         }
 
@@ -80,8 +74,6 @@ public class HomeController {
                                @RequestParam int questionId,
                                @RequestParam String answerText,
                                Model model) {
-//        System.out.println(clientId);
-//        System.out.println("hello!");
         try {
             User user = userService.getUserById(clientId);
 

@@ -4,14 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class MySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     @Autowired
@@ -22,18 +25,4 @@ public class MySecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityF
         auth.jdbcAuthentication().dataSource(dataSource);
     }
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> {
-            try {
-                auth
-                        .requestMatchers("/").hasAnyRole("EMPLOYEE", "HR", "MANAGER")
-                        .requestMatchers("/hr_info").hasRole("HR")
-                        .requestMatchers("/manager_info/**").hasRole("MANAGER")
-                        .and().formLogin().permitAll();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
 }
