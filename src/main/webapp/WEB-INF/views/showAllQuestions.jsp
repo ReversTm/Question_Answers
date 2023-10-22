@@ -58,5 +58,8 @@
     </c:forEach>
     </tbody>
 </table>
+<input type="button" value="back to main page"
+       onclick="window.location.href = '/'"/>
+<br>
 </body>
 </html>

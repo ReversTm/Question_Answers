@@ -7,11 +7,16 @@ import com.example.springbootpages.Service.AnswerService;
 import com.example.springbootpages.Service.UserService;
 import com.example.springbootpages.Service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.*;
 
 @Controller
@@ -69,19 +74,16 @@ public class HomeController {
         return "answer-info";
     }
 
-    @RequestMapping("/submit-answer")
-    public String submitAnswer(@RequestParam int clientId,
-                               @RequestParam int questionId,
+    @PostMapping("/submit-answer")
+    public String submitAnswer(@RequestParam int questionId,
                                @RequestParam String answerText,
+                               Principal principal,
                                Model model) {
         try {
-            User user = userService.getUserById(clientId);
-
-//            System.out.println(clientId);
-//            System.out.println(questionId);
-//            System.out.println(answerText);
-
-            // Создайте новый ответ
+//            System.out.println(principal);
+            String username = principal.getName();
+            User user = userService.getUserByUsername(username);
+            // предполагая, что у вас есть этот метод
             Answer answer = new Answer();
             answer.setAnswerText(answerText);
 
@@ -95,10 +97,11 @@ public class HomeController {
             answerService.saveAnswer(answer);
 
             // Перенаправьте пользователя обратно на страницу с ответами
-            return "redirect:/answer?clientId=" + clientId + "&questionId=" + questionId;
+            return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage()); // Добавьте сообщение об ошибке в модель
             return "error-page"; // Создайте страницу для отображения ошибок
         }
     }
+
 }

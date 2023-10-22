@@ -27,11 +27,12 @@
 
 
 <form action="/submit-answer" method="post">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="hidden" name="questionId" value="${question.id}" />
-<%--    Client Id: ${user.id}--%>
-    <input type="hidden" name="clientId" value="${user.id}" /> <!-- Используйте ${user.id} -->
+    <input type="hidden" name="clientId" value="${user.id}" />
     <textarea name="answerText" rows="4" cols="50" placeholder="Your Answer"></textarea>
     <input type="submit" value="Submit Answer" />
 </form>
+<a href="/showAllQuestions">Back to all Questions</a>
 </body>
 </html>
