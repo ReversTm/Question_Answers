@@ -44,6 +44,9 @@ public class User {
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers;
 
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Votes> votes;
+
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + "]";
