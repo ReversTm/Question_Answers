@@ -3,13 +3,12 @@ package com.example.springbootpages.Controller;
 import com.example.springbootpages.Entity.Answer;
 import com.example.springbootpages.Entity.User;
 import com.example.springbootpages.Entity.Question;
+import com.example.springbootpages.Entity.Vote;
 import com.example.springbootpages.Service.AnswerService;
 import com.example.springbootpages.Service.UserService;
 import com.example.springbootpages.Service.QuestionService;
+import com.example.springbootpages.Service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +30,9 @@ public class HomeController {
     @Autowired
     private AnswerService answerService;
 
+    @Autowired
+    private VoteService voteService;
+
 
     @RequestMapping("/")
     public String firstView() {
@@ -44,7 +46,7 @@ public class HomeController {
         List<User> allUsers = userService.getAllUsers();
 //        System.out.println(allUsers);
         model.addAttribute("allClients", allUsers);
-        Map<User, List<Question>> userQuestionsMap = new HashMap<>();
+       LinkedHashMap<User, List<Question>> userQuestionsMap = new LinkedHashMap<>();
 
         for (User user : allUsers) {
 //            System.out.println(user);
@@ -61,12 +63,16 @@ public class HomeController {
 
     @RequestMapping("/answer")
     public String answerClient(@RequestParam int clientId,
-            @RequestParam int questionId, Model
-            model) {
+                               @RequestParam int questionId,
+                               Model model,
+                               Principal principal) {
         Question question = questionService.getQuestion(questionId);
         User user = userService.getUserById(clientId);
         List<Answer> answers = answerService.getByQuestion(question);
+        String name = principal.getName();
 
+
+        model.addAttribute("currentUserName", name);
         model.addAttribute("question", question);
         model.addAttribute("client", user);
         model.addAttribute("answers", answers);
@@ -100,8 +106,43 @@ public class HomeController {
             return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage()); // Добавьте сообщение об ошибке в модель
-            return "error-page"; // Создайте страницу для отображения ошибок
+            return "error"; // Создайте страницу для отображения ошибок
         }
     }
 
+    @RequestMapping("/submit-vote")
+    public String submitVote(@RequestParam int answerId, @RequestParam int voteValue, @RequestParam int questionId, Principal principal, Model model) {
+        try {
+            User user = userService.getUserByUsername(principal.getName());
+            Answer answer = answerService.getAnswerById(answerId);
+            Vote vote = voteService.getVoteByUserAndAnswer(user, answer);
+//            Question question = questionService.getQuestion(questionId);
+            if (vote == null) {
+                // Користувач ще не голосував за цю відповідь
+                vote = new Vote();
+                vote.setUser(user);
+                vote.setAnswer(answer);
+                vote.setVote(voteValue);
+                voteService.saveVote(vote);
+
+                // Оновлюємо рейтинг відповіді
+                answer.setRating(answer.getRating() + voteValue);
+                answerService.update(answer);
+            } else {
+                if(vote.getVote() != voteValue){
+                    // Если новое значение голоса отличается от предыдущего, обновляем голос и рейтинг ответа
+                    answer.setRating(answer.getRating() + voteValue); // Учитываем предыдущий голос в общем рейтинге
+                    vote.setVote(voteValue);
+                    voteService.saveVote(vote);
+                    answerService.update(answer);
+                }
+//                model.addAttribute("error", "Ви вже голосували за цю відповідь!");
+            }
+            return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+
+    }
 }

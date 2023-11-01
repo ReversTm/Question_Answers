@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="th" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -35,13 +36,29 @@
 <c:forEach var="answer" items="${answers}">
     <div class="answer">
         <p><b>${answer.user.name}</b>: ${answer.answerText}</p> <!-- Текст ответа -->
+<%--            <c:if test="${answer.user.name == currentUserName}">--%>
+<%--            <form action="/edit-answer" method="post" class="edit-form">--%>
+<%--            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
+<%--            <input type="hidden" name="questionId" value="${question.id}" />--%>
+<%--            <input type="hidden" name="answerId" value="${answer.id}" />--%>
+<%--            <input type="submit" value="Edit" />--%>
+<%--            </form>--%>
+<%--            </c:if>--%>
         <form action="/submit-vote" method="post" class="vote-form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
+            <input type="hidden" name="questionId" value="${question.id}" />
+
             <input type="hidden" name="answerId" value="${answer.id}" />
             <input type="hidden" name="voteValue" value="1" />
             <input type="submit" value="+" />
         </form>
         <span id="rating-${answer.id}" class="rating">${answer.rating}</span> <!-- Счетчик рейтинга -->
         <form action="/submit-vote" method="post" class="vote-form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
+            <input type="hidden" name="questionId" value="${question.id}" />
+
             <input type="hidden" name="answerId" value="${answer.id}" />
             <input type="hidden" name="voteValue" value="-1" />
             <input type="submit" value="-" />

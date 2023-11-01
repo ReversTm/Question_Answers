@@ -45,7 +45,7 @@ public class User {
     private List<Answer> answers;
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Votes> votes;
+    private List<Vote> votes;
 
     @Override
     public String toString() {

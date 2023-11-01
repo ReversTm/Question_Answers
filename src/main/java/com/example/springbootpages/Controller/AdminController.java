@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @Controller
 public class AdminController {
 
@@ -17,14 +18,12 @@ public class AdminController {
     private UserService userService;
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String showAdminPage(Model model) {
         List<User> allUsers = userService.getAllUsers();
         model.addAttribute("allUsers", allUsers);
         return "admin";
     }
     @RequestMapping("/deleteEmployee")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String  deleteUser(@RequestParam int userId){
 //        System.out.println(userId);
         userService.deleteUser(userId);
