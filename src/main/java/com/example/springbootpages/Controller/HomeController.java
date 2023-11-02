@@ -1,13 +1,7 @@
 package com.example.springbootpages.Controller;
 
-import com.example.springbootpages.Entity.Answer;
-import com.example.springbootpages.Entity.User;
-import com.example.springbootpages.Entity.Question;
-import com.example.springbootpages.Entity.Vote;
-import com.example.springbootpages.Service.AnswerService;
-import com.example.springbootpages.Service.UserService;
-import com.example.springbootpages.Service.QuestionService;
-import com.example.springbootpages.Service.VoteService;
+import com.example.springbootpages.Entity.*;
+import com.example.springbootpages.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,12 +25,14 @@ public class HomeController {
     private AnswerService answerService;
 
     @Autowired
-    private VoteService voteService;
+    private VoteAnswerService voteAnswerService;
+
+    @Autowired
+    private VoteQuestionService voteQuestionService;
 
 
     @RequestMapping("/")
-    public String firstView(Principal principal,
-                            Model model) {
+    public String firstView(Principal principal, Model model) {
         String name = principal.getName();
         model.addAttribute("userName", name);
         return "first-view";
@@ -47,17 +43,14 @@ public class HomeController {
     public String showAllQuestions(Model model) {
 
         List<User> allUsers = userService.getAllUsers();
-//        System.out.println(allUsers);
         model.addAttribute("allClients", allUsers);
         LinkedHashMap<User, List<Question>> userQuestionsMap = new LinkedHashMap<>();
 
         for (User user : allUsers) {
-//            System.out.println(user);
-//            System.out.println("ID:" + user.getId());
             List<Question> userQuestions = questionService.getAllQuestions(user.getId());
-//            System.out.println(userQuestions);
             userQuestionsMap.put(user, userQuestions);
         }
+
 
         model.addAttribute("userQuestionsMap", userQuestionsMap);
 
@@ -65,10 +58,7 @@ public class HomeController {
     }
 
     @RequestMapping("/answer")
-    public String answerClient(@RequestParam int clientId,
-                               @RequestParam int questionId,
-                               Model model,
-                               Principal principal) {
+    public String answerClient(@RequestParam int clientId, @RequestParam int questionId, Model model, Principal principal) {
         Question question = questionService.getQuestion(questionId);
         User user = userService.getUserById(clientId);
         List<Answer> answers = answerService.getByQuestion(question);
@@ -84,49 +74,43 @@ public class HomeController {
     }
 
     @PostMapping("/submit-answer")
-    public String submitAnswer(@RequestParam int questionId,
-                               @RequestParam String answerText,
-                               Principal principal,
-                               Model model) {
+    public String submitAnswer(@RequestParam int questionId, @RequestParam String answerText, Principal principal, Model model) {
         try {
-//            System.out.println(principal);
             String username = principal.getName();
             User user = userService.getUserByUsername(username);
-            // предполагая, что у вас есть этот метод
             Answer answer = new Answer();
             answer.setAnswerText(answerText);
 
-            // Получите вопрос по его ID
+            // Получаем вопрос по ID
             Question question = questionService.getQuestion(questionId);
 
             answer.setQuestion(question);
             answer.setUser(user);
 
-            // Сохраните ответ в базе данных
+            // Сохраняем ответ в базе данных
             answerService.saveAnswer(answer);
 
-            // Перенаправьте пользователя обратно на страницу с ответами
             return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage()); // Добавьте сообщение об ошибке в модель
-            return "error"; // Создайте страницу для отображения ошибок
+            model.addAttribute("error", e.getMessage());
+            return "error";
         }
     }
 
-    @RequestMapping("/submit-vote")
-    public String submitVote(@RequestParam int answerId, @RequestParam int voteValue, @RequestParam int questionId, Principal principal, Model model) {
+    @RequestMapping("/submit-vote-for-answer")
+    public String submitVoteForAnswer(@RequestParam int answerId, @RequestParam int voteValue, @RequestParam int questionId, Principal principal, Model model) {
         try {
             User user = userService.getUserByUsername(principal.getName());
             Answer answer = answerService.getAnswerById(answerId);
-            Vote vote = voteService.getVoteByUserAndAnswer(user, answer);
-//            Question question = questionService.getQuestion(questionId);
+            Vote vote = voteAnswerService.getVoteByUserAndAnswer(user, answer);
             if (vote == null) {
+
                 // Користувач ще не голосував за цю відповідь
                 vote = new Vote();
                 vote.setUser(user);
                 vote.setAnswer(answer);
                 vote.setVote(voteValue);
-                voteService.saveVote(vote);
+                voteAnswerService.saveVote(vote);
 
                 // Оновлюємо рейтинг відповіді
                 answer.setRating(answer.getRating() + voteValue);
@@ -136,10 +120,43 @@ public class HomeController {
                     // Если новое значение голоса отличается от предыдущего, обновляем голос и рейтинг ответа
                     answer.setRating(answer.getRating() + voteValue); // Учитываем предыдущий голос в общем рейтинге
                     vote.setVote(voteValue);
-                    voteService.saveVote(vote);
+                    voteAnswerService.saveVote(vote);
                     answerService.update(answer);
                 }
-//                model.addAttribute("error", "Ви вже голосували за цю відповідь!");
+            }
+            return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+    }
+
+    @RequestMapping("/submit-vote-for-question")
+    public String submitVoteForQuestion(@RequestParam int voteValue, @RequestParam int questionId, Principal principal, Model model) {
+        try {
+            User user = userService.getUserByUsername(principal.getName());
+            Question question = questionService.getQuestion(questionId);
+            VoteQuestion vote = voteQuestionService.getVoteByUserAndQuestion(user, question);
+
+            if (vote == null) {
+                // Користувач ще не голосував за цю відповідь
+                vote = new VoteQuestion();
+                vote.setUser(user);
+                vote.setQuestion(question);
+                vote.setVote(voteValue);
+                voteQuestionService.saveVote(vote);
+
+                // Оновлюємо рейтинг відповіді
+                question.setRating(question.getRating() + voteValue);
+                questionService.update(question);
+            } else {
+                if (vote.getVote() != voteValue) {
+                    // Если новое значение голоса отличается от предыдущего, обновляем голос и рейтинг ответа
+                    question.setRating(question.getRating() + voteValue); // Учитываем предыдущий голос в общем рейтинге
+                    vote.setVote(voteValue);
+                    voteQuestionService.saveVote(vote);
+                    questionService.update(question);
+                }
             }
             return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
         } catch (Exception e) {
@@ -149,11 +166,7 @@ public class HomeController {
     }
 
     @RequestMapping("/edit-answer")
-    public String editAnswer(@RequestParam int answerId,
-                             @RequestParam int questionId,
-                             @RequestParam String answerText,
-                             Principal principal,
-                             Model model) {
+    public String editAnswer(@RequestParam int answerId, @RequestParam int questionId, @RequestParam String answerText, Principal principal, Model model) {
         Answer answer = answerService.getAnswerById(answerId);
         User user = userService.getUserByUsername(principal.getName());
         try {

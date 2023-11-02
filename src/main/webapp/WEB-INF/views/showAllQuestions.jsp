@@ -88,6 +88,7 @@
             <th>Surname</th>
             <th>Age</th>
             <th>Question</th>
+            <th>Rating</th> <!-- Add the Rating column -->
             <th>Action</th>
         </tr>
         </thead>
@@ -101,6 +102,7 @@
                         <td rowspan="${fn:length(entry.value)}">${entry.key.age}</td>
                     </c:if>
                     <td>${question.questionText}</td>
+                    <td>${question.rating}</td> <!-- Display the rating value -->
                     <td>
                         <form action="/answer" method="get">
                             <input type="hidden" name="clientId" value="${entry.key.id}" />

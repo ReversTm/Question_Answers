@@ -1,6 +1,5 @@
 package com.example.springbootpages.Entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,25 +7,23 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
 @EqualsAndHashCode
 @Builder
 @Entity
-@Table(name = "question")
-public class Question {
-
+@Table(name = "votequestions")
+public class VoteQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "question_text")
-    private String questionText;
-
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name="user_id", referencedColumnName="id")
     private User user;
 
-    @Column(name = "rating")
-    private int rating;
+    @ManyToOne
+    @JoinColumn(name="question_id", referencedColumnName="id")
+    private Question question;
 
+    @Column(name = "vote")
+    private int vote;
 }

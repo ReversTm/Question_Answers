@@ -1,5 +1,6 @@
 package com.example.springbootpages.Service;
 
+import com.example.springbootpages.Entity.Answer;
 import com.example.springbootpages.Entity.Question;
 import com.example.springbootpages.Repository.QuestionRepository;
 import lombok.AllArgsConstructor;
@@ -25,5 +26,8 @@ public class QuestionService {
     public Question getQuestion(int questionId) {
         Question question = questionRepository.getById(questionId);
         return question;
+    }
+    public void update(Question question) {
+        questionRepository.save(question);
     }
 }

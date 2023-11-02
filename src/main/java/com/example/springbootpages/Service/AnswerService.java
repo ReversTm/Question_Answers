@@ -40,10 +40,5 @@ public class AnswerService {
     public void update(Answer answer) {
         answerRepository.save(answer);
     }
-//    public List<Answer> getAnswersFromOneClient(int id){
-//        List<Answer> answer = answerRepository.findByClient(id);
-//        return answer;
-//    }
-
 
 }

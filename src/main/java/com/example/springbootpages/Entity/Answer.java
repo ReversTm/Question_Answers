@@ -27,7 +27,7 @@ public class Answer {
     private Question question;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "rating")

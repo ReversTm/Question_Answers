@@ -50,6 +50,20 @@
     <c:when test="${not empty question}">
         <p>Author: ${question.user.name}</p> <!-- Имя автора вопроса -->
         <p>Question: ${question.questionText}</p> <!-- Текст вопроса -->
+
+        <form action="/submit-vote-for-question" method="post" class="vote-form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <input type="hidden" name="questionId" value="${question.id}" />
+            <input type="hidden" name="voteValue" value="1" />
+            <input type="submit" value="+" />
+        </form>
+        <span id="question-rating" class="rating">${question.rating}</span> <!-- Счетчик рейтинга -->
+        <form action="/submit-vote-for-question" method="post" class="vote-form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <input type="hidden" name="questionId" value="${question.id}" />
+            <input type="hidden" name="voteValue" value="-1" />
+            <input type="submit" value="-" />
+        </form>
     </c:when>
     <c:otherwise>
         <p>No question found.</p>
@@ -77,7 +91,7 @@
                 </div>
             </div>
         </c:if>
-        <form action="/submit-vote" method="post" class="vote-form">
+        <form action="/submit-vote-for-answer" method="post" class="vote-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <input type="hidden" name="questionId" value="${question.id}" />
             <input type="hidden" name="answerId" value="${answer.id}" />
@@ -85,7 +99,7 @@
             <input type="submit" value="+" />
         </form>
         <span id="rating-${answer.id}" class="rating">${answer.rating}</span> <!-- Счетчик рейтинга -->
-        <form action="/submit-vote" method="post" class="vote-form">
+        <form action="/submit-vote-for-answer" method="post" class="vote-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <input type="hidden" name="questionId" value="${question.id}" />
             <input type="hidden" name="answerId" value="${answer.id}" />
@@ -111,6 +125,6 @@
     <textarea name="answerText" rows="4" cols="50" placeholder="Your Answer"></textarea>
     <input type="submit" value="Submit Answer" />
 </form>
-<a href="/showAllQuestions">Back to all Questions</a>
+<button class="action-button back-button" onclick="window.location.href = '/showAllQuestions'">Back to Main Page</button>
 </body>
 </html>

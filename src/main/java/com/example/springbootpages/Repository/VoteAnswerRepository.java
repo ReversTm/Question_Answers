@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VoteRepository extends JpaRepository<Vote, Integer> {
+public interface VoteAnswerRepository extends JpaRepository<Vote, Integer> {
     Question findById(int id);
     List<Question> findByUserId(int userId);
 
