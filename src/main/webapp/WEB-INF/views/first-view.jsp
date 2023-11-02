@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>Hello User!</h1>
+<h1>Hello ${userName}!</h1>
 <br>
 <br>
 <input type="button" value="Show All Questions"

@@ -16,6 +16,31 @@
         .rating {
             margin-left: 10px;
         }
+        .edit-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        .edit-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .edit-form {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -36,19 +61,25 @@
 <c:forEach var="answer" items="${answers}">
     <div class="answer">
         <p><b>${answer.user.name}</b>: ${answer.answerText}</p> <!-- Текст ответа -->
-<%--            <c:if test="${answer.user.name == currentUserName}">--%>
-<%--            <form action="/edit-answer" method="post" class="edit-form">--%>
-<%--            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />--%>
-<%--            <input type="hidden" name="questionId" value="${question.id}" />--%>
-<%--            <input type="hidden" name="answerId" value="${answer.id}" />--%>
-<%--            <input type="submit" value="Edit" />--%>
-<%--            </form>--%>
-<%--            </c:if>--%>
+        <c:if test="${answer.user.name == currentUserName}">
+            <button class="edit-button" onclick="openEditForm(${answer.id})">Edit</button>
+
+            <div id="editModal-${answer.id}" class="edit-modal">
+                <div class="edit-form">
+                    <form action="/edit-answer" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                        <input type="hidden" name="questionId" value="${question.id}" />
+                        <input type="hidden" name="answerId" value="${answer.id}" />
+                        <textarea name="answerText" rows="4" cols="50" placeholder="Your Answer">${answer.answerText}</textarea>
+                        <input type="submit" value="Confirm Edit" />
+                    </form>
+                    <button onclick="closeEditForm(${answer.id})">Close</button>
+                </div>
+            </div>
+        </c:if>
         <form action="/submit-vote" method="post" class="vote-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-
             <input type="hidden" name="questionId" value="${question.id}" />
-
             <input type="hidden" name="answerId" value="${answer.id}" />
             <input type="hidden" name="voteValue" value="1" />
             <input type="submit" value="+" />
@@ -56,9 +87,7 @@
         <span id="rating-${answer.id}" class="rating">${answer.rating}</span> <!-- Счетчик рейтинга -->
         <form action="/submit-vote" method="post" class="vote-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-
             <input type="hidden" name="questionId" value="${question.id}" />
-
             <input type="hidden" name="answerId" value="${answer.id}" />
             <input type="hidden" name="voteValue" value="-1" />
             <input type="submit" value="-" />
@@ -66,10 +95,19 @@
     </div>
 </c:forEach>
 
+<script>
+    function openEditForm(answerId) {
+        document.getElementById('editModal-' + answerId).style.display = "block";
+    }
+
+    function closeEditForm(answerId) {
+        document.getElementById('editModal-' + answerId).style.display = "none";
+    }
+</script>
+
 <form action="/submit-answer" method="post">
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> <%--является частью защиты от CSRF (межсайтовой подделки запросов) и представляет собой скрытое поле, которое содержит токен CSRF (кросс-сайт-запрос).--%>
     <input type="hidden" name="questionId" value="${question.id}" />
-<%--    <input type="hidden" name="clientId" value="${user.id}" />--%>
     <textarea name="answerText" rows="4" cols="50" placeholder="Your Answer"></textarea>
     <input type="submit" value="Submit Answer" />
 </form>

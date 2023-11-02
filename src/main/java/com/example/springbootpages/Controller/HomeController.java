@@ -35,7 +35,10 @@ public class HomeController {
 
 
     @RequestMapping("/")
-    public String firstView() {
+    public String firstView(Principal principal,
+                            Model model) {
+        String name = principal.getName();
+        model.addAttribute("userName", name);
         return "first-view";
     }
 
@@ -46,7 +49,7 @@ public class HomeController {
         List<User> allUsers = userService.getAllUsers();
 //        System.out.println(allUsers);
         model.addAttribute("allClients", allUsers);
-       LinkedHashMap<User, List<Question>> userQuestionsMap = new LinkedHashMap<>();
+        LinkedHashMap<User, List<Question>> userQuestionsMap = new LinkedHashMap<>();
 
         for (User user : allUsers) {
 //            System.out.println(user);
@@ -129,7 +132,7 @@ public class HomeController {
                 answer.setRating(answer.getRating() + voteValue);
                 answerService.update(answer);
             } else {
-                if(vote.getVote() != voteValue){
+                if (vote.getVote() != voteValue) {
                     // Если новое значение голоса отличается от предыдущего, обновляем голос и рейтинг ответа
                     answer.setRating(answer.getRating() + voteValue); // Учитываем предыдущий голос в общем рейтинге
                     vote.setVote(voteValue);
@@ -143,6 +146,23 @@ public class HomeController {
             model.addAttribute("error", e.getMessage());
             return "error";
         }
+    }
 
+    @RequestMapping("/edit-answer")
+    public String editAnswer(@RequestParam int answerId,
+                             @RequestParam int questionId,
+                             @RequestParam String answerText,
+                             Principal principal,
+                             Model model) {
+        Answer answer = answerService.getAnswerById(answerId);
+        User user = userService.getUserByUsername(principal.getName());
+        try {
+            answer.setAnswerText(answerText);
+            answerService.update(answer);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+        return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
     }
 }
