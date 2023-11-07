@@ -50,7 +50,7 @@ public class HomeController {
             List<Question> userQuestions = questionService.getAllQuestions(user.getId());
             userQuestionsMap.put(user, userQuestions);
         }
-
+//        System.out.println(userQuestionsMap);
 
         model.addAttribute("userQuestionsMap", userQuestionsMap);
 
@@ -172,6 +172,24 @@ public class HomeController {
         try {
             answer.setAnswerText(answerText);
             answerService.update(answer);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "error";
+        }
+        return "redirect:/answer?clientId=" + user.getId() + "&questionId=" + questionId;
+    }
+
+    @RequestMapping("/delete-answer")
+    public String deleteAnswer(@RequestParam int answerId,
+                               @RequestParam int questionId,
+                               Principal principal, Model model) {
+        Answer answer = answerService.getAnswerById(answerId);
+        User user = userService.getUserByUsername(principal.getName());
+//        System.out.println(answer);
+//        System.out.println(user);
+        try {
+            voteAnswerService.deleteVotesFromAnswer(answer);
+            answerService.delete(answer);
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error";

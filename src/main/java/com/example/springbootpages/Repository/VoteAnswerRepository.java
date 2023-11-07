@@ -15,4 +15,6 @@ public interface VoteAnswerRepository extends JpaRepository<Vote, Integer> {
     List<Question> findByUserId(int userId);
 
     Vote getVoteByUserAndAnswer(User user, Answer answer);
+
+    List<Vote> findByAnswer(Answer answer);
 }

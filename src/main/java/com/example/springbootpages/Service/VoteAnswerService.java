@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class VoteAnswerService {
@@ -22,5 +24,10 @@ public class VoteAnswerService {
 
     public void saveVote(Vote vote) {
         voteAnswerRepository.save(vote);
+    }
+
+    public void deleteVotesFromAnswer(Answer answer) {
+        List<Vote> votes = voteAnswerRepository.findByAnswer(answer);
+        voteAnswerRepository.deleteAll(votes);
     }
 }

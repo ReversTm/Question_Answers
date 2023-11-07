@@ -34,12 +34,22 @@
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.4);
         }
+
         .edit-form {
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
+        }
+
+        .edit-form input[type="submit"], .edit-form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -77,6 +87,7 @@
         <p><b>${answer.user.name}</b>: ${answer.answerText}</p> <!-- Текст ответа -->
         <c:if test="${answer.user.name == currentUserName}">
             <button class="edit-button" onclick="openEditForm(${answer.id})">Edit</button>
+            <button class="edit-button" onclick="openDeleteConfirmation(${answer.id})">Delete</button>
 
             <div id="editModal-${answer.id}" class="edit-modal">
                 <div class="edit-form">
@@ -90,7 +101,22 @@
                     <button onclick="closeEditForm(${answer.id})">Close</button>
                 </div>
             </div>
+
+            <!-- Delete confirmation modal -->
+            <div id="deleteConfirmation-${answer.id}" class="edit-modal">
+                <div class="edit-form">
+                    <h2>Are you sure you want to delete this answer?</h2>
+                    <form action="/delete-answer" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                        <input type="hidden" name="questionId" value="${question.id}" />
+                        <input type="hidden" name="answerId" value="${answer.id}" />
+                        <input type="submit" value="Confirm Delete" />
+                    </form>
+                    <button onclick="closeDeleteConfirmation(${answer.id})">Close</button>
+                </div>
+            </div>
         </c:if>
+
         <form action="/submit-vote-for-answer" method="post" class="vote-form">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <input type="hidden" name="questionId" value="${question.id}" />
@@ -116,6 +142,14 @@
 
     function closeEditForm(answerId) {
         document.getElementById('editModal-' + answerId).style.display = "none";
+    }
+
+    function openDeleteConfirmation(answerId) {
+        document.getElementById('deleteConfirmation-' + answerId).style.display = "block";
+    }
+
+    function closeDeleteConfirmation(answerId) {
+        document.getElementById('deleteConfirmation-' + answerId).style.display = "none";
     }
 </script>
 
