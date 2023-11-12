@@ -5,6 +5,7 @@ import com.example.springbootpages.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,30 @@ public class HomeController {
         return "first-view";
     }
 
+    @RequestMapping("/addNewQuestion")
+    public String addNewQuestion(Model model){
+
+        Question question = new Question();
+        model.addAttribute("question", question);
+        return "addNewQuestion";
+    }
+
+
+    @RequestMapping("/saveQuestion")
+    public String saveQuestion( @ModelAttribute("question")
+                                Question question,
+                                @RequestParam String answerText,
+                                Principal principal){
+        String name = principal.getName();
+        User user = userService.getUserByUsername(name);
+
+        question.setQuestionText(answerText);
+        question.setUser(user);
+
+        System.out.println(question);
+        questionService.update(question);
+        return "redirect:/showAllQuestions";
+    }
 
     @RequestMapping("/showAllQuestions")
     public String showAllQuestions(Model model) {
