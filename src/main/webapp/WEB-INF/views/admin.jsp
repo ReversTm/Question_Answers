@@ -64,7 +64,7 @@
     </table>
 
     <br/>
-    <a href="/">Back to main page</a>
+    <a href="/">Back to postalcode page</a>
 
 </div>
 
